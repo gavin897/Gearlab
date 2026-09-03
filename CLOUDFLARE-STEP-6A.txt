@@ -1,0 +1,41 @@
+GEARLAB — WHAT TO DO NEXT
+
+1) Extract this ZIP on your computer.
+
+2) Upload ALL files/folders inside the `gearlab-cloudflare` folder
+   to the ROOT of your GitHub repository:
+   gavin897/Gearlab
+
+   IMPORTANT:
+   package.json must be visible at the top level of the repository.
+   Do NOT upload the outer folder itself as another nested folder.
+
+3) In Supabase:
+   SQL Editor -> New query
+   Open `supabase/setup.sql` from this project.
+   Copy it into Supabase and press Run.
+
+4) In Cloudflare:
+   Workers & Pages -> gearlab -> Settings -> Variables and Secrets
+
+   Add:
+   NEXT_PUBLIC_SUPABASE_URL
+   = your Supabase Project URL
+
+   Add:
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+   = your sb_publishable_... key
+
+   Never paste an sb_secret_... key into public/client variables.
+
+5) Trigger a new Cloudflare deployment.
+
+6) If the build fails again:
+   Open the failed deployment -> Build logs.
+   Send ChatGPT a screenshot of the FIRST red error message.
+   Do not change random settings before we read the error.
+
+EXPECTED RESULT:
+Your *.workers.dev site should load the GearLab dashboard.
+Settings -> Test Supabase Connection should say:
+Connected to Supabase.
