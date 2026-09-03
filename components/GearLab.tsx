@@ -133,7 +133,7 @@ export default function GearLab() {
       headers: {
         "Content-Type": "application/json",
       },
-     D body: JSON.stringify({
+      body: JSON.stringify({
         model_url: uploadData.url,
       }),
     });
