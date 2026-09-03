@@ -106,8 +106,61 @@ export default function GearLab() {
       setImportMessage(error instanceof Error ? error.message : "Save failed.");
     } finally {
       setBusy(false);
-    }
+      }
   }
+     async function attachModelToProduct(product: Product, file?: File) {
+  if (!file || !product.id) return;
+
+  setUploadMessage(`Uploading 3D model for ${product.name}…`);
+
+  try {
+    const body = new FormData();
+    body.append("file", file);
+
+    const uploadRes = await fetch("/api/upload", {
+      method: "POST",
+      body,
+    });
+
+    const uploadData = await uploadRes.json();
+
+    if (!uploadRes.ok) {
+      throw new Error(uploadData.error || "3D model upload failed.");
+    }
+
+    const updateRes = await fetch(`/api/products/${product.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+     D body: JSON.stringify({
+        model_url: uploadData.url,
+      }),
+    });
+
+    const updateData = await updateRes.json();
+
+    if (!updateRes.ok) {
+      throw new Error(updateData.error || "Could not attach 3D model.");
+    }
+
+    setViewerModel(uploadData.url);
+    setUploadMessage(`3D model attached to ${product.name}.`);
+
+    await loadProducts();
+  } catch (error) {
+    setUploadMessage(
+      error instanceof Error ? error.message : "Could not attach 3D model."
+    );
+  }
+}
+      
+      async function removeProduct(id?: string) {
+  if (!id) return;
+  const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+  if (res.ok) loadProducts();
+}
+    
 
   async function uploadImage(file?: File) {
     if (!file) return;
@@ -235,6 +288,15 @@ export default function GearLab() {
                           <div className="gearMeta">{p.brand || "Unknown brand"} {p.price ? `• ${p.price}` : ""}</div>
                           <div className="gearActions">
                             {p.model_url && <button className="secondary" onClick={() => { setViewerModel(p.model_url!); setActive("3D Viewer"); }}>View 3D</button>}
+                           <label className="secondary" style={{ cursor: "pointer" }}>
+  Attach 3D Model
+  <input
+    type="file"
+    accept=".glb,.gltf,model/gltf-binary,model/gltf+json"
+    style={{ display: "none" }}
+    onChange={(e) => attachModelToProduct(p, e.target.files?.[0])}
+  />
+</label>
                             <button className="danger" onClick={() => removeProduct(p.id)}>Delete</button>
                           </div>
                         </div>
