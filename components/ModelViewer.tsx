@@ -63,7 +63,7 @@ export default function ModelViewer({
         source,
         (gltf) => {
           object = gltf.scene;
-           gltf.scene.rotation.x = Math.PI;
+           gltf.scene.rotation.z = Math.PI;
           root.add(gltf.scene);
 
           const box = new THREE.Box3().setFromObject(gltf.scene);
